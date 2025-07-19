@@ -34,7 +34,7 @@ func main() {
 	}
 
 	// Load configuration
-	config, err := configs.LoadConfig(*configFile)
+	config, err := configs.LoadConfig(*configFile, version, commit, date)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to load configuration: %v\n", err)
 		os.Exit(1)
@@ -54,13 +54,6 @@ func main() {
 	defer func() {
 		_ = logger.Sync()
 	}()
-
-	// Log startup information
-	logger.Info("Starting certstream-server",
-		zap.String("version", version),
-		zap.String("commit", commit),
-		zap.String("built", date),
-	)
 
 	// Create and start server
 	server, err := certstream.New(config, logger)

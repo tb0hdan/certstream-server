@@ -9,6 +9,10 @@ type Config struct {
 	Server  ServerConfig  `mapstructure:"server"`
 	CTLogs  CTLogsConfig  `mapstructure:"ct_logs"`
 	Logging LoggingConfig `mapstructure:"logging"`
+	// Version information
+	Version string
+	Commit  string
+	Date    string
 }
 
 // ServerConfig holds server-specific configuration
@@ -40,10 +44,10 @@ type LoggingConfig struct {
 }
 
 // LoadConfig loads configuration from file and environment
-func LoadConfig(configPath ...string) (*Config, error) {
+func LoadConfig(configPath, version, commit, date string) (*Config, error) {
 	// If a specific config file path is provided, use it
-	if len(configPath) > 0 && configPath[0] != "" {
-		viper.SetConfigFile(configPath[0])
+	if len(configPath) > 0 && configPath != "" {
+		viper.SetConfigFile(configPath)
 	} else {
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
@@ -91,6 +95,10 @@ func LoadConfig(configPath ...string) (*Config, error) {
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, err
 	}
+	// Set version information
+	config.Version = version
+	config.Commit = commit
+	config.Date = date
 
 	return &config, nil
 }

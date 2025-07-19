@@ -35,6 +35,13 @@ type Server struct {
 
 // New creates a new certstream server
 func New(config *configs.Config, logger *zap.Logger) (ServerInterface, error) {
+	// Log startup information
+	logger.Info("Starting certstream-server",
+		zap.String("version", config.Version),
+		zap.String("commit", config.Commit),
+		zap.String("built", config.Date),
+	)
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	// Create certificate buffer
