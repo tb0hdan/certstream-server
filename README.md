@@ -1,6 +1,6 @@
 # Certstream Server - Go Implementation
 
-This is a Go port of the Certstream server, which aggregates certificate data from Certificate Transparency logs and provides real-time streaming via WebSocket.
+This is a Go port of the [CaliDog Certstream server](https://github.com/CaliDog/certstream-server), which aggregates certificate data from Certificate Transparency logs and provides real-time streaming via WebSocket.
 
 ## Features
 
