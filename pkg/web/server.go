@@ -179,7 +179,11 @@ func (s *Server) handleClient(client *models.Client) {
 
 // handleHome serves the homepage
 func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./frontend/dist/index.html")
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/html")
+	if _, err := fmt.Fprintln(w, "<h1>Welcome to the CertStream Server</h1>"); err != nil {
+		return
+	}
 }
 
 // handleLatest returns the latest certificates
