@@ -55,14 +55,17 @@ func (suite *CertstreamTestSuite) TestNew() {
 	
 	suite.NoError(err)
 	suite.NotNil(server)
-	suite.Equal(suite.config, server.config)
-	suite.Equal(suite.logger, server.logger)
-	suite.NotNil(server.clientManager)
-	suite.NotNil(server.certBuffer)
-	suite.NotNil(server.watcherManager)
-	suite.NotNil(server.webServer)
-	suite.NotNil(server.ctx)
-	suite.NotNil(server.cancel)
+	
+	// Type assert to access unexported fields
+	serverImpl := server.(*Server)
+	suite.Equal(suite.config, serverImpl.config)
+	suite.Equal(suite.logger, serverImpl.logger)
+	suite.NotNil(serverImpl.clientManager)
+	suite.NotNil(serverImpl.certBuffer)
+	suite.NotNil(serverImpl.watcherManager)
+	suite.NotNil(serverImpl.webServer)
+	suite.NotNil(serverImpl.ctx)
+	suite.NotNil(serverImpl.cancel)
 }
 
 func (suite *CertstreamTestSuite) TestServerInterface() {

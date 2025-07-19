@@ -34,7 +34,7 @@ type Server struct {
 }
 
 // New creates a new certstream server
-func New(config *configs.Config, logger *zap.Logger) (*Server, error) {
+func New(config *configs.Config, logger *zap.Logger) (ServerInterface, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	// Create certificate buffer

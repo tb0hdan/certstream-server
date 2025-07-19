@@ -28,7 +28,7 @@ func GetRetryableClient(config *configs.Config, logger *zap.Logger) *http.Client
 		Transport: pooledTransport,
 	}
 	retryClient.RetryMax = 3
-	retryClient.Logger = log.NewLogger(logger)
+	retryClient.Logger = log.NewLeveledLogger(logger)
 
 	// Get the standard client from retryablehttp
 	return retryClient.StandardClient()

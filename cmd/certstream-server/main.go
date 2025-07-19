@@ -1,18 +1,15 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	"github.com/tb0hdan/certstream-server/pkg/certstream"
 	"github.com/tb0hdan/certstream-server/pkg/configs"
+	"github.com/tb0hdan/certstream-server/pkg/log"
+	"github.com/tb0hdan/certstream-server/pkg/utils"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var (
@@ -49,7 +46,7 @@ func main() {
 	}
 
 	// Initialize logger
-	logger, err := initLogger(config.Logging)
+	logger, err := log.New(config.Logging)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to initialize logger: %v\n", err)
 		os.Exit(1)
@@ -70,68 +67,6 @@ func main() {
 	if err != nil {
 		logger.Fatal("Failed to create server", zap.Error(err))
 	}
+	utils.Run(server, logger)
 
-	if err := server.Start(); err != nil {
-		logger.Fatal("Failed to start server", zap.Error(err))
-	}
-
-	// Wait for interrupt signal
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-
-	<-sigChan
-	logger.Info("Received shutdown signal")
-
-	// Graceful shutdown
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	if err := server.Shutdown(); err != nil {
-		logger.Error("Error during shutdown", zap.Error(err))
-	}
-
-	select {
-	case <-shutdownCtx.Done():
-		logger.Error("Shutdown timeout exceeded")
-	default:
-		logger.Info("Shutdown complete")
-	}
-}
-
-// initLogger initializes the zap logger
-func initLogger(config configs.LoggingConfig) (*zap.Logger, error) {
-	// Parse log level
-	level, err := zapcore.ParseLevel(config.Level)
-	if err != nil {
-		return nil, fmt.Errorf("invalid log level: %w", err)
-	}
-
-	// Create encoder config
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.TimeKey = "timestamp"
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-
-	// Create encoder based on format
-	var encoder zapcore.Encoder
-	switch config.Format {
-	case "json":
-		encoder = zapcore.NewJSONEncoder(encoderConfig)
-	case "console":
-		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		encoder = zapcore.NewConsoleEncoder(encoderConfig)
-	default:
-		encoder = zapcore.NewJSONEncoder(encoderConfig)
-	}
-
-	// Create core
-	core := zapcore.NewCore(
-		encoder,
-		zapcore.AddSync(os.Stdout),
-		level,
-	)
-
-	// Create logger
-	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-
-	return logger, nil
 }

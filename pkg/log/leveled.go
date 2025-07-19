@@ -25,6 +25,6 @@ func (l *Logger) Warn(msg string, keysAndValues ...interface{}) {
 	l.logger.Warn(msg, zap.Any("keysAndValues", keysAndValues))
 }
 
-func NewLogger(logger *zap.Logger) retryablehttp.LeveledLogger {
+func NewLeveledLogger(logger *zap.Logger) retryablehttp.LeveledLogger {
 	return &Logger{logger: logger}
 }
