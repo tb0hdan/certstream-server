@@ -1,0 +1,23 @@
+# Certstream Server Configuration
+
+server:
+  port: 4000
+  host: "0.0.0.0"
+  read_timeout: 10      # seconds
+  write_timeout: 10     # seconds
+  max_message_size: 512000  # bytes
+  pong_timeout: 60      # seconds
+  ping_period: 30       # seconds
+  client_buffer_size: 500  # messages
+
+ct_logs:
+  log_list_url: "https://www.gstatic.com/ct/log_list/v3/all_logs_list.json"
+  user_agent: "certstream-server-go/1.0"
+  polling_interval: 10   # seconds
+  batch_size: 512        # certificates per batch
+  max_concurrency: 5     # concurrent fetches per watcher
+  request_timeout: 30    # seconds
+
+logging:
+  level: "info"          # debug, info, warn, error
+  format: "json"         # json, console
