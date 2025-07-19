@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/tb0hdan/certstream-server/pkg/configs"
 	"github.com/tb0hdan/certstream-server/pkg/buffer"
 	"github.com/tb0hdan/certstream-server/pkg/client"
+	"github.com/tb0hdan/certstream-server/pkg/configs"
 	"github.com/tb0hdan/certstream-server/pkg/models"
 	"go.uber.org/zap"
 )
@@ -55,9 +55,6 @@ func (s *Server) Start() error {
 	mux.HandleFunc("/latest.json", s.handleLatest)
 	mux.HandleFunc("/example.json", s.handleExample)
 	mux.HandleFunc("/stats", s.handleStats)
-
-	// Static files
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./frontend/dist/static"))))
 
 	addr := fmt.Sprintf("%s:%d", s.config.Server.Host, s.config.Server.Port)
 	s.httpServer = &http.Server{

@@ -7,12 +7,12 @@ import (
 	"io"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/tb0hdan/certstream-server/pkg/buffer"
 	"github.com/tb0hdan/certstream-server/pkg/client"
 	"github.com/tb0hdan/certstream-server/pkg/configs"
 	"github.com/tb0hdan/certstream-server/pkg/models"
+	"github.com/tb0hdan/certstream-server/pkg/utils"
 	"go.uber.org/zap"
 )
 
@@ -29,15 +29,15 @@ type Manager struct {
 
 // NewManager creates a new watcher manager
 func NewManager(config *configs.Config, logger *zap.Logger, clientManager *client.Manager, certBuffer *buffer.CertificateBuffer) *Manager {
+	standardClient := utils.GetRetryableClient(config, logger)
+
 	return &Manager{
 		config:        config,
 		logger:        logger,
 		clientManager: clientManager,
 		certBuffer:    certBuffer,
 		watchers:      make(map[string]*Watcher),
-		httpClient: &http.Client{
-			Timeout: time.Duration(config.CTLogs.RequestTimeout) * time.Second,
-		},
+		httpClient:    standardClient,
 	}
 }
 

@@ -3,7 +3,6 @@ package watcher
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -16,6 +15,7 @@ import (
 	"github.com/tb0hdan/certstream-server/pkg/configs"
 	"github.com/tb0hdan/certstream-server/pkg/models"
 	"github.com/tb0hdan/certstream-server/pkg/parser"
+	"github.com/tb0hdan/certstream-server/pkg/utils"
 	"go.uber.org/zap"
 )
 
@@ -42,16 +42,8 @@ type Watcher struct {
 func NewWatcher(config *configs.Config, logger *zap.Logger, log models.CTLog, operatorName string,
 	clientManager *client.Manager, certBuffer *buffer.CertificateBuffer) *Watcher {
 
-	// Create CT client
-	httpClient := &http.Client{
-		Timeout: time.Duration(config.CTLogs.RequestTimeout) * time.Second,
-		Transport: &http.Transport{
-			MaxIdleConns:        100,
-			MaxIdleConnsPerHost: 10,
-		},
-	}
-
-	ctClient, err := ctclient.New(log.URL, httpClient, jsonclient.Options{
+	standardClient := utils.GetRetryableClient(config, logger)
+	ctClient, err := ctclient.New(log.URL, standardClient, jsonclient.Options{
 		UserAgent: config.CTLogs.UserAgent,
 	})
 	if err != nil {

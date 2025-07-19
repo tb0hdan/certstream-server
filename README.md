@@ -17,6 +17,7 @@ This is a Go port of the [CaliDog Certstream server](https://github.com/CaliDog/
 - Structured logging with zap
 - Graceful shutdown
 - Docker support
+- No UI. You can use the original [CaliDog Certstream UI](https://github.com/CaliDog/certstream-server/tree/master/frontend) if you need.
 
 ## Requirements
 
