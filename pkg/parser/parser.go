@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/certstream/certstream-server/pkg/models"
 	ct "github.com/google/certificate-transparency-go"
 	"github.com/google/certificate-transparency-go/tls"
 	"github.com/google/certificate-transparency-go/x509"
 	"github.com/google/certificate-transparency-go/x509/pkix"
+	"github.com/tb0hdan/certstream-server/pkg/models"
 )
 
 // Parser handles certificate parsing from CT logs

@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/certstream/certstream-server/configs"
-	"github.com/certstream/certstream-server/internal/buffer"
-	"github.com/certstream/certstream-server/internal/client"
-	"github.com/certstream/certstream-server/pkg/models"
+	"github.com/tb0hdan/certstream-server/pkg/buffer"
+	"github.com/tb0hdan/certstream-server/pkg/client"
+	"github.com/tb0hdan/certstream-server/pkg/configs"
+	"github.com/tb0hdan/certstream-server/pkg/models"
 	"go.uber.org/zap"
 )
 

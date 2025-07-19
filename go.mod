@@ -1,4 +1,4 @@
-module github.com/certstream/certstream-server
+module github.com/tb0hdan/certstream-server
 
 go 1.21
 

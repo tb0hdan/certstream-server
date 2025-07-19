@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/certstream/certstream-server/configs"
-	"github.com/certstream/certstream-server/internal/buffer"
-	"github.com/certstream/certstream-server/internal/client"
-	"github.com/certstream/certstream-server/pkg/models"
 	"github.com/gorilla/websocket"
+	"github.com/tb0hdan/certstream-server/pkg/configs"
+	"github.com/tb0hdan/certstream-server/pkg/buffer"
+	"github.com/tb0hdan/certstream-server/pkg/client"
+	"github.com/tb0hdan/certstream-server/pkg/models"
 	"go.uber.org/zap"
 )
 
@@ -183,10 +183,10 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 // handleLatest returns the latest certificates
 func (s *Server) handleLatest(w http.ResponseWriter, r *http.Request) {
 	certs := s.certBuffer.GetLatest(25)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	
+
 	if err := json.NewEncoder(w).Encode(certs); err != nil {
 		s.logger.Error("Failed to encode latest certificates", zap.Error(err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -196,15 +196,15 @@ func (s *Server) handleLatest(w http.ResponseWriter, r *http.Request) {
 // handleExample returns the most recent certificate
 func (s *Server) handleExample(w http.ResponseWriter, r *http.Request) {
 	cert := s.certBuffer.GetMostRecent()
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	
+
 	if cert == nil {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-	
+
 	if err := json.NewEncoder(w).Encode(cert); err != nil {
 		s.logger.Error("Failed to encode example certificate", zap.Error(err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -217,10 +217,10 @@ func (s *Server) handleStats(w http.ResponseWriter, r *http.Request) {
 		"processed_certs":   s.certBuffer.GetProcessedCount(),
 		"connected_clients": s.clientManager.GetClientCount(),
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	
+
 	if err := json.NewEncoder(w).Encode(stats); err != nil {
 		s.logger.Error("Failed to encode stats", zap.Error(err))
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

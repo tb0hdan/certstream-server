@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/certstream/certstream-server/configs"
-	"github.com/certstream/certstream-server/internal/certstream"
+	"github.com/tb0hdan/certstream-server/pkg/certstream"
+	"github.com/tb0hdan/certstream-server/pkg/configs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -76,7 +76,7 @@ func main() {
 	// Wait for interrupt signal
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-	
+
 	<-sigChan
 	logger.Info("Received shutdown signal")
 
@@ -130,6 +130,6 @@ func initLogger(config configs.LoggingConfig) (*zap.Logger, error) {
 
 	// Create logger
 	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-	
+
 	return logger, nil
 }

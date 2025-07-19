@@ -5,25 +5,25 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/certstream/certstream-server/configs"
-	"github.com/certstream/certstream-server/internal/buffer"
-	"github.com/certstream/certstream-server/internal/client"
-	"github.com/certstream/certstream-server/internal/watcher"
-	"github.com/certstream/certstream-server/internal/web"
+	"github.com/tb0hdan/certstream-server/pkg/buffer"
+	"github.com/tb0hdan/certstream-server/pkg/client"
+	"github.com/tb0hdan/certstream-server/pkg/configs"
+	"github.com/tb0hdan/certstream-server/pkg/watcher"
+	"github.com/tb0hdan/certstream-server/pkg/web"
 	"go.uber.org/zap"
 )
 
 // Server represents the main certstream server
 type Server struct {
-	config          *configs.Config
-	logger          *zap.Logger
-	clientManager   *client.Manager
-	certBuffer      *buffer.CertificateBuffer
-	watcherManager  *watcher.Manager
-	webServer       *web.Server
-	ctx             context.Context
-	cancel          context.CancelFunc
-	wg              sync.WaitGroup
+	config         *configs.Config
+	logger         *zap.Logger
+	clientManager  *client.Manager
+	certBuffer     *buffer.CertificateBuffer
+	watcherManager *watcher.Manager
+	webServer      *web.Server
+	ctx            context.Context
+	cancel         context.CancelFunc
+	wg             sync.WaitGroup
 }
 
 // New creates a new certstream server

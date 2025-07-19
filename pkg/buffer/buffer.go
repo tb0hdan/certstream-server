@@ -4,7 +4,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/certstream/certstream-server/pkg/models"
+	"github.com/tb0hdan/certstream-server/pkg/models"
 )
 
 // CertificateBuffer maintains a ring buffer of recent certificates
@@ -34,11 +34,11 @@ func (cb *CertificateBuffer) Add(cert *models.Certificate) {
 
 	cb.buffer[cb.head] = cert
 	cb.head = (cb.head + 1) % cb.capacity
-	
+
 	if cb.size < cb.capacity {
 		cb.size++
 	}
-	
+
 	atomic.AddInt64(&cb.processedCount, 1)
 }
 
@@ -52,13 +52,13 @@ func (cb *CertificateBuffer) GetLatest(limit int) []*models.Certificate {
 	}
 
 	result := make([]*models.Certificate, limit)
-	
+
 	// Start from the most recent entry
 	start := cb.head - 1
 	if start < 0 {
 		start = cb.capacity - 1
 	}
-	
+
 	for i := 0; i < limit; i++ {
 		idx := (start - i) % cb.capacity
 		if idx < 0 {
@@ -66,7 +66,7 @@ func (cb *CertificateBuffer) GetLatest(limit int) []*models.Certificate {
 		}
 		result[i] = cb.buffer[idx]
 	}
-	
+
 	return result
 }
 
@@ -83,7 +83,7 @@ func (cb *CertificateBuffer) GetMostRecent() *models.Certificate {
 	if idx < 0 {
 		idx = cb.capacity - 1
 	}
-	
+
 	return cb.buffer[idx]
 }
 

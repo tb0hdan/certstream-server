@@ -6,21 +6,21 @@ import (
 
 // Config holds the application configuration
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	CTLogs   CTLogsConfig   `mapstructure:"ct_logs"`
-	Logging  LoggingConfig  `mapstructure:"logging"`
+	Server  ServerConfig  `mapstructure:"server"`
+	CTLogs  CTLogsConfig  `mapstructure:"ct_logs"`
+	Logging LoggingConfig `mapstructure:"logging"`
 }
 
 // ServerConfig holds server-specific configuration
 type ServerConfig struct {
-	Port            int    `mapstructure:"port"`
-	Host            string `mapstructure:"host"`
-	ReadTimeout     int    `mapstructure:"read_timeout"`
-	WriteTimeout    int    `mapstructure:"write_timeout"`
-	MaxMessageSize  int64  `mapstructure:"max_message_size"`
-	PongTimeout     int    `mapstructure:"pong_timeout"`
-	PingPeriod      int    `mapstructure:"ping_period"`
-	ClientBufferSize int   `mapstructure:"client_buffer_size"`
+	Port             int    `mapstructure:"port"`
+	Host             string `mapstructure:"host"`
+	ReadTimeout      int    `mapstructure:"read_timeout"`
+	WriteTimeout     int    `mapstructure:"write_timeout"`
+	MaxMessageSize   int64  `mapstructure:"max_message_size"`
+	PongTimeout      int    `mapstructure:"pong_timeout"`
+	PingPeriod       int    `mapstructure:"ping_period"`
+	ClientBufferSize int    `mapstructure:"client_buffer_size"`
 }
 
 // CTLogsConfig holds CT logs configuration

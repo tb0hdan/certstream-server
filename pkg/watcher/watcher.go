@@ -8,14 +8,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/certstream/certstream-server/configs"
-	"github.com/certstream/certstream-server/internal/buffer"
-	"github.com/certstream/certstream-server/internal/client"
-	"github.com/certstream/certstream-server/internal/parser"
-	"github.com/certstream/certstream-server/pkg/models"
 	ct "github.com/google/certificate-transparency-go"
 	ctclient "github.com/google/certificate-transparency-go/client"
 	"github.com/google/certificate-transparency-go/jsonclient"
+	"github.com/tb0hdan/certstream-server/pkg/buffer"
+	"github.com/tb0hdan/certstream-server/pkg/client"
+	"github.com/tb0hdan/certstream-server/pkg/configs"
+	"github.com/tb0hdan/certstream-server/pkg/models"
+	"github.com/tb0hdan/certstream-server/pkg/parser"
 	"go.uber.org/zap"
 )
 

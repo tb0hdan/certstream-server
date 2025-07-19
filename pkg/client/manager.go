@@ -6,20 +6,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/certstream/certstream-server/pkg/models"
 	"github.com/google/uuid"
+	"github.com/tb0hdan/certstream-server/pkg/models"
 	"go.uber.org/zap"
 )
 
 // Manager manages WebSocket clients
 type Manager struct {
-	clients      map[string]*models.Client
-	mu           sync.RWMutex
-	logger       *zap.Logger
-	register     chan *models.Client
-	unregister   chan *models.Client
-	broadcast    chan *models.Certificate
-	bufferSize   int
+	clients    map[string]*models.Client
+	mu         sync.RWMutex
+	logger     *zap.Logger
+	register   chan *models.Client
+	unregister chan *models.Client
+	broadcast  chan *models.Certificate
+	bufferSize int
 }
 
 // NewManager creates a new client manager
@@ -85,7 +85,7 @@ func (m *Manager) GetClientCount() int {
 func (m *Manager) GetClients() map[string]*models.Client {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	
+
 	clients := make(map[string]*models.Client)
 	for id, client := range m.clients {
 		clients[id] = client
