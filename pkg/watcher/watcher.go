@@ -25,9 +25,9 @@ type Watcher struct {
 	logger        *zap.Logger
 	log           models.CTLog
 	operatorName  string
-	clientManager *client.Manager
-	certBuffer    *buffer.CertificateBuffer
-	parser        *parser.Parser
+	clientManager client.ManagerInterface
+	certBuffer    buffer.CertificateBufferInterface
+	parser        parser.ParserInterface
 	ctClient      *ctclient.LogClient
 
 	// State
@@ -40,7 +40,7 @@ type Watcher struct {
 
 // NewWatcher creates a new CT log watcher
 func NewWatcher(config *configs.Config, logger *zap.Logger, log models.CTLog, operatorName string,
-	clientManager *client.Manager, certBuffer *buffer.CertificateBuffer) *Watcher {
+	clientManager client.ManagerInterface, certBuffer buffer.CertificateBufferInterface) *Watcher {
 
 	standardClient := utils.GetRetryableClient(config, logger)
 	ctClient, err := ctclient.New(log.URL, standardClient, jsonclient.Options{
@@ -60,6 +60,19 @@ func NewWatcher(config *configs.Config, logger *zap.Logger, log models.CTLog, op
 		parser:        parser.New(),
 		ctClient:      ctClient,
 		batchSize:     config.CTLogs.BatchSize,
+	}
+}
+
+// GetStats returns watcher statistics
+func (w *Watcher) GetStats() models.WorkerStats {
+	w.mu.RLock()
+	defer w.mu.RUnlock()
+
+	return models.WorkerStats{
+		LogURL:         w.log.URL,
+		ProcessedCount: atomic.LoadInt64(&w.processedCount),
+		TreeSize:       atomic.LoadInt64(&w.treeSize),
+		LastUpdate:     w.lastUpdate,
 	}
 }
 
@@ -203,18 +216,5 @@ func (w *Watcher) processBatch(ctx context.Context, start, end int64) {
 
 		// Update processed count
 		atomic.AddInt64(&w.processedCount, 1)
-	}
-}
-
-// GetStats returns watcher statistics
-func (w *Watcher) GetStats() models.WorkerStats {
-	w.mu.RLock()
-	defer w.mu.RUnlock()
-
-	return models.WorkerStats{
-		LogURL:         w.log.URL,
-		ProcessedCount: atomic.LoadInt64(&w.processedCount),
-		TreeSize:       atomic.LoadInt64(&w.treeSize),
-		LastUpdate:     w.lastUpdate,
 	}
 }

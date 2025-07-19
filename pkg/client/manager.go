@@ -11,6 +11,15 @@ import (
 	"go.uber.org/zap"
 )
 
+type ManagerInterface interface {
+	Start(ctx context.Context)
+	Register(client *models.Client)
+	Unregister(client *models.Client)
+	Broadcast(cert *models.Certificate)
+	GetClientCount() int
+	GetClients() map[string]*models.Client
+}
+
 // Manager manages WebSocket clients
 type Manager struct {
 	clients    map[string]*models.Client
@@ -23,7 +32,7 @@ type Manager struct {
 }
 
 // NewManager creates a new client manager
-func NewManager(logger *zap.Logger, bufferSize int) *Manager {
+func NewManager(logger *zap.Logger, bufferSize int) ManagerInterface {
 	return &Manager{
 		clients:    make(map[string]*models.Client),
 		logger:     logger,

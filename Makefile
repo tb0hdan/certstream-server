@@ -9,7 +9,7 @@ DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS=-ldflags "-w -s -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.date=${DATE}"
 
 # Default target
-all: build
+all: lint test build
 
 # Build the binary
 build:

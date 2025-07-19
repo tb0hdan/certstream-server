@@ -15,18 +15,23 @@ import (
 	"go.uber.org/zap"
 )
 
+type ServerInterface interface {
+	Start() error
+	Shutdown(ctx context.Context) error
+}
+
 // Server represents the web server
 type Server struct {
 	config        *configs.Config
 	logger        *zap.Logger
-	clientManager *client.Manager
-	certBuffer    *buffer.CertificateBuffer
+	clientManager client.ManagerInterface
+	certBuffer    buffer.CertificateBufferInterface
 	httpServer    *http.Server
 	upgrader      websocket.Upgrader
 }
 
 // NewServer creates a new web server
-func NewServer(config *configs.Config, logger *zap.Logger, clientManager *client.Manager, certBuffer *buffer.CertificateBuffer) *Server {
+func NewServer(config *configs.Config, logger *zap.Logger, clientManager client.ManagerInterface, certBuffer buffer.CertificateBufferInterface) ServerInterface {
 	return &Server{
 		config:        config,
 		logger:        logger,
@@ -127,15 +132,15 @@ func (s *Server) handleClient(client *models.Client) {
 	ticker := time.NewTicker(time.Duration(s.config.Server.PingPeriod) * time.Second)
 	defer func() {
 		ticker.Stop()
-		conn.Close()
+		_ = conn.Close()
 		s.clientManager.Unregister(client)
 	}()
 
 	// Configure connection
 	conn.SetReadLimit(s.config.Server.MaxMessageSize)
-	conn.SetReadDeadline(time.Now().Add(time.Duration(s.config.Server.PongTimeout) * time.Second))
+	_ = conn.SetReadDeadline(time.Now().Add(time.Duration(s.config.Server.PongTimeout) * time.Second))
 	conn.SetPongHandler(func(string) error {
-		conn.SetReadDeadline(time.Now().Add(time.Duration(s.config.Server.PongTimeout) * time.Second))
+		_ = conn.SetReadDeadline(time.Now().Add(time.Duration(s.config.Server.PongTimeout) * time.Second))
 		return nil
 	})
 
@@ -143,7 +148,7 @@ func (s *Server) handleClient(client *models.Client) {
 	go func() {
 		for {
 			if _, _, err := conn.NextReader(); err != nil {
-				conn.Close()
+				_ = conn.Close()
 				break
 			}
 		}
@@ -153,9 +158,9 @@ func (s *Server) handleClient(client *models.Client) {
 	for {
 		select {
 		case message, ok := <-client.SendChan:
-			conn.SetWriteDeadline(time.Now().Add(time.Duration(s.config.Server.WriteTimeout) * time.Second))
+			_ = conn.SetWriteDeadline(time.Now().Add(time.Duration(s.config.Server.WriteTimeout) * time.Second))
 			if !ok {
-				conn.WriteMessage(websocket.CloseMessage, []byte{})
+				_ = conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
@@ -164,7 +169,7 @@ func (s *Server) handleClient(client *models.Client) {
 			}
 
 		case <-ticker.C:
-			conn.SetWriteDeadline(time.Now().Add(time.Duration(s.config.Server.WriteTimeout) * time.Second))
+			_ = conn.SetWriteDeadline(time.Now().Add(time.Duration(s.config.Server.WriteTimeout) * time.Second))
 			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}

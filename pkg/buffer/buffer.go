@@ -7,6 +7,13 @@ import (
 	"github.com/tb0hdan/certstream-server/pkg/models"
 )
 
+type CertificateBufferInterface interface {
+	Add(cert *models.Certificate)
+	GetLatest(limit int) []*models.Certificate
+	GetMostRecent() *models.Certificate
+	GetProcessedCount() int64
+}
+
 // CertificateBuffer maintains a ring buffer of recent certificates
 type CertificateBuffer struct {
 	mu             sync.RWMutex
@@ -18,7 +25,7 @@ type CertificateBuffer struct {
 }
 
 // New creates a new certificate buffer with the specified capacity
-func New(capacity int) *CertificateBuffer {
+func New(capacity int) CertificateBufferInterface {
 	return &CertificateBuffer{
 		buffer:   make([]*models.Certificate, capacity),
 		capacity: capacity,

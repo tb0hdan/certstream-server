@@ -17,10 +17,10 @@ import (
 type Server struct {
 	config         *configs.Config
 	logger         *zap.Logger
-	clientManager  *client.Manager
-	certBuffer     *buffer.CertificateBuffer
-	watcherManager *watcher.Manager
-	webServer      *web.Server
+	clientManager  client.ManagerInterface
+	certBuffer     buffer.CertificateBufferInterface
+	watcherManager watcher.ManagerInterface
+	webServer      web.ServerInterface
 	ctx            context.Context
 	cancel         context.CancelFunc
 	wg             sync.WaitGroup

@@ -14,11 +14,16 @@ import (
 	"github.com/tb0hdan/certstream-server/pkg/models"
 )
 
+type ParserInterface interface {
+	ParseLogEntry(entry *ct.LogEntry, logURL string, operatorName string) (*models.Certificate, error)
+	ParseMerkleTreeLeaf(leafData []byte) (*ct.MerkleTreeLeaf, error)
+}
+
 // Parser handles certificate parsing from CT logs
 type Parser struct{}
 
 // New creates a new certificate parser
-func New() *Parser {
+func New() ParserInterface {
 	return &Parser{}
 }
 

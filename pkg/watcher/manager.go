@@ -16,19 +16,24 @@ import (
 	"go.uber.org/zap"
 )
 
+type ManagerInterface interface {
+	Start(ctx context.Context) error
+	GetStats() map[string]models.WorkerStats
+}
+
 // Manager manages CT log watchers
 type Manager struct {
 	config        *configs.Config
 	logger        *zap.Logger
-	clientManager *client.Manager
-	certBuffer    *buffer.CertificateBuffer
+	clientManager client.ManagerInterface
+	certBuffer    buffer.CertificateBufferInterface
 	watchers      map[string]*Watcher
 	mu            sync.RWMutex
 	httpClient    *http.Client
 }
 
 // NewManager creates a new watcher manager
-func NewManager(config *configs.Config, logger *zap.Logger, clientManager *client.Manager, certBuffer *buffer.CertificateBuffer) *Manager {
+func NewManager(config *configs.Config, logger *zap.Logger, clientManager client.ManagerInterface, certBuffer buffer.CertificateBufferInterface) ManagerInterface {
 	standardClient := utils.GetRetryableClient(config, logger)
 
 	return &Manager{
@@ -86,7 +91,9 @@ func (m *Manager) fetchCTLogList() (*models.CTLogList, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
