@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"net"
 	"net/http"
 	"time"
 
@@ -18,6 +19,10 @@ func GetRetryableClient(config *configs.Config, logger *zap.Logger) *http.Client
 	pooledTransport := cleanhttp.DefaultPooledTransport()
 	pooledTransport.MaxIdleConnsPerHost = 10
 	pooledTransport.MaxIdleConns = 100
+	pooledTransport.DialContext = (&net.Dialer{
+		Timeout:   time.Duration(config.CTLogs.RequestTimeout) * time.Second,
+		KeepAlive: time.Duration(config.CTLogs.RequestTimeout/2) * time.Second,
+	}).DialContext
 	//
 	retryClient.HTTPClient = &http.Client{
 		Transport: pooledTransport,
@@ -26,8 +31,5 @@ func GetRetryableClient(config *configs.Config, logger *zap.Logger) *http.Client
 	retryClient.Logger = log.NewLogger(logger)
 
 	// Get the standard client from retryablehttp
-	standardClient := retryClient.StandardClient()
-	standardClient.Timeout = time.Duration(config.CTLogs.RequestTimeout) * time.Second
-
-	return standardClient
+	return retryClient.StandardClient()
 }
