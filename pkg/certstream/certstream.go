@@ -13,6 +13,13 @@ import (
 	"go.uber.org/zap"
 )
 
+type ServerInterface interface {
+	// Start starts the certstream server
+	Start() error
+	// Shutdown gracefully shuts down the server
+	Shutdown() error
+}
+
 // Server represents the main certstream server
 type Server struct {
 	config         *configs.Config

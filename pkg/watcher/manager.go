@@ -27,7 +27,7 @@ type Manager struct {
 	logger        *zap.Logger
 	clientManager client.ManagerInterface
 	certBuffer    buffer.CertificateBufferInterface
-	watchers      map[string]*Watcher
+	watchers      map[string]WatcherInterface
 	mu            sync.RWMutex
 	httpClient    *http.Client
 }
@@ -41,7 +41,7 @@ func NewManager(config *configs.Config, logger *zap.Logger, clientManager client
 		logger:        logger,
 		clientManager: clientManager,
 		certBuffer:    certBuffer,
-		watchers:      make(map[string]*Watcher),
+		watchers:      make(map[string]WatcherInterface),
 		httpClient:    standardClient,
 	}
 }

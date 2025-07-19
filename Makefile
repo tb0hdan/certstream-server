@@ -1,36 +1,40 @@
-.PHONY: all build clean test run docker-build docker-run lint
+.PHONY: build
 
 # Variables
 BINARY_NAME=certstream-server
-DOCKER_IMAGE=certstream/certstream-server-go
+DOCKER_IMAGE=tb0hdan/certstream-server-go
 VERSION=$(shell git describe --tags --always || echo "dev")
 COMMIT=$(shell git rev-parse --short HEAD || echo "unknown")
 DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS=-ldflags "-w -s -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.date=${DATE}"
 
 # Default target
-all: lint test build
+all: tools lint test build
+
+build-dir:
+	@if [ ! -d "build" ]; then mkdir -p build; fi
 
 # Build the binary
-build:
+build: build-dir
 	@echo "Building ${BINARY_NAME}..."
-	@go build ${LDFLAGS} -o bin/${BINARY_NAME} ./cmd/certstream-server
+	@go build ${LDFLAGS} -o build/${BINARY_NAME} ./cmd/certstream-server
 
 # Clean build artifacts
 clean:
 	@echo "Cleaning..."
-	@rm -rf bin/
+	@rm -rf build
 	@go clean
 
 # Run tests
 test:
 	@echo "Running tests..."
-	@go test -v -race -cover ./...
+	@go test -v -race -cover -coverprofile=build/coverage.out ./...
+	@go tool cover -html=build/coverage.out -o build/coverage.html
 
 # Run the application
 run: build
 	@echo "Running ${BINARY_NAME}..."
-	@./bin/${BINARY_NAME}
+	@./build/${BINARY_NAME}
 
 # Build Docker image
 docker-build:
@@ -47,32 +51,6 @@ lint:
 	@echo "Running linter..."
 	@golangci-lint run ./...
 
-# Install dependencies
-deps:
-	@echo "Installing dependencies..."
-	@go mod download
-	@go mod tidy
-
-# Generate mocks (if needed)
-mocks:
-	@echo "Generating mocks..."
-	@go generate ./...
-
-# Run benchmarks
-bench:
-	@echo "Running benchmarks..."
-	@go test -bench=. -benchmem ./...
-
-# Show help
-help:
-	@echo "Available targets:"
-	@echo "  make build       - Build the binary"
-	@echo "  make clean       - Clean build artifacts"
-	@echo "  make test        - Run tests"
-	@echo "  make run         - Build and run the application"
-	@echo "  make docker-build - Build Docker image"
-	@echo "  make docker-run  - Run Docker container"
-	@echo "  make lint        - Run linter"
-	@echo "  make deps        - Install dependencies"
-	@echo "  make bench       - Run benchmarks"
-	@echo "  make help        - Show this help message"
+tools:
+	@echo "Running tools..."
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v2.2.1

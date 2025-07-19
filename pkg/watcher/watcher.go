@@ -19,6 +19,13 @@ import (
 	"go.uber.org/zap"
 )
 
+type WatcherInterface interface {
+	// Start starts the watcher
+	Start(ctx context.Context)
+	// GetStats returns watcher statistics
+	GetStats() models.WorkerStats
+}
+
 // Watcher watches a single CT log for new certificates
 type Watcher struct {
 	config        *configs.Config
@@ -40,7 +47,7 @@ type Watcher struct {
 
 // NewWatcher creates a new CT log watcher
 func NewWatcher(config *configs.Config, logger *zap.Logger, log models.CTLog, operatorName string,
-	clientManager client.ManagerInterface, certBuffer buffer.CertificateBufferInterface) *Watcher {
+	clientManager client.ManagerInterface, certBuffer buffer.CertificateBufferInterface) WatcherInterface {
 
 	standardClient := utils.GetRetryableClient(config, logger)
 	ctClient, err := ctclient.New(log.URL, standardClient, jsonclient.Options{

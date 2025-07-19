@@ -34,4 +34,4 @@ go.work.sum
 .idea/
 
 # Builds
-bin/
+build/
