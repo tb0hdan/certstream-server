@@ -21,9 +21,9 @@ This is a Go port of the [CaliDog Certstream server](https://github.com/CaliDog/
 
 ## Requirements
 
-- Go 1.21 or higher
-- Make (optional, for using Makefile commands)
-
+- Go 1.24 or higher
+- Make
+  
 ## Quick Start
 
 ### Using Make
@@ -215,21 +215,7 @@ certstream-server/
 ### Running Tests
 
 ```bash
-# Run all tests
-go test ./...
-
-# Run with coverage
-go test -cover ./...
-
-# Run with race detection
-go test -race ./...
-```
-
-### Benchmarks
-
-```bash
-# Run benchmarks
-go test -bench=. ./...
+make test
 ```
 
 ## Performance Considerations
