@@ -109,8 +109,8 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		streamType = models.StreamLite
 	}
 
-	// Create client
-	client := &models.Client{
+	// Create modelsClient
+	modelsClient := &models.Client{
 		StreamType:  streamType,
 		Connection:  conn,
 		SendChan:    make(chan []byte, s.config.Server.ClientBufferSize),
@@ -119,11 +119,11 @@ func (s *Server) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		ConnectedAt: time.Now(),
 	}
 
-	// Register client
-	s.clientManager.Register(client)
+	// Register modelsClient
+	s.clientManager.Register(modelsClient)
 
-	// Handle client connection
-	go s.handleClient(client)
+	// Handle modelsClient connection
+	go s.handleClient(modelsClient)
 }
 
 // handleClient manages a WebSocket client connection
