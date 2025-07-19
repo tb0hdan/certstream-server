@@ -52,10 +52,10 @@ make docker-run
 go mod download
 
 # Build the binary
-go build -o bin/certstream-server ./cmd/certstream-server
+go build -o build/certstream-server ./cmd/certstream-server
 
 # Run the application
-./bin/certstream-server
+./build/certstream-server
 ```
 
 ## Configuration
@@ -186,24 +186,30 @@ curl http://localhost:4000/stats
 ### Project Structure
 
 ```
-go/
+certstream-server/
 ├── cmd/
 │   └── certstream-server/    # Main application entry point
-├── internal/
+│       └── main.go
+├── pkg/
 │   ├── buffer/               # Certificate ring buffer
 │   ├── certstream/           # Main server logic
 │   ├── client/               # WebSocket client management
+│   ├── configs/              # Configuration structs
+│   ├── log/                  # Logging utilities
+│   ├── models/               # Data models
 │   ├── parser/               # Certificate parsing
+│   ├── utils/                # Utility functions
 │   ├── watcher/              # CT log watchers
 │   └── web/                  # HTTP/WebSocket server
-├── pkg/
-│   └── models/               # Data models
 ├── configs/
-│   ├── config.go             # Configuration structs
 │   └── config.yaml           # Default configuration
+├── build/                    # Build artifacts
 ├── Dockerfile                # Docker build file
 ├── Makefile                  # Build automation
-└── go.mod                    # Go module definition
+├── CLAUDE.md                 # Claude AI instructions
+├── LICENSE                   # License file
+├── go.mod                    # Go module definition
+└── go.sum                    # Go module checksums
 ```
 
 ### Running Tests
