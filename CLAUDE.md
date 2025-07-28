@@ -1,7 +1,8 @@
 # Claude Instructions
 
 ## On Startup
-Always read README.md first to understand the project context and current state.
+- Always read README.md first to understand the project context and current state.
+- Always include a new line at the end of every file you generate or modify.
 
 ## Project Commands
 - Lint: `make lint`
